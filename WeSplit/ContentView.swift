@@ -7,6 +7,21 @@
 
 import SwiftUI
 
+struct TipWarning: ViewModifier {
+    var tip: Int
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(tip == 0 ? .red : .primary)
+    }
+}
+
+extension View {
+    func tipWarning(with tip: Int) -> some View {
+        modifier(TipWarning(tip: tip))
+    }
+}
+
 struct ContentView: View {
     // @State: automatically watch the changes!
     @State private var checkAmount = 0.0
@@ -30,7 +45,7 @@ struct ContentView: View {
         
         return amountPerPerson
     }
-    
+
     var body: some View {
         NavigationStack {
             Form {
@@ -49,7 +64,7 @@ struct ContentView: View {
                 
                 Section("How much tip?") {
                     Picker("Tip Percentage", selection: $tipPercentage) {
-                        ForEach(1..<101) {
+                        ForEach(0..<101) {
                             Text($0, format: .percent)
                         }
                     }
@@ -58,7 +73,7 @@ struct ContentView: View {
                 }
                 
                 Section("Amount for check") {
-                    Text(totalForCheck, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    Text(totalForCheck, format: .currency(code: Locale.current.currency?.identifier ?? "USD")).tipWarning(with: tipPercentage)
                 }
                 
                 Section("Amount per person") {
