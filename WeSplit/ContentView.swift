@@ -23,72 +23,70 @@ extension View {
 }
 
 struct ContentView: View {
-    // @State: automatically watch the changes!
-    @State private var checkAmount = 0.0
-    @State private var numberOfPeople = 2
-    @State private var tipPercentage = 20
-    @FocusState private var amountIsFocused: Bool
+    @State private var money = 0.0
+    @State private var people = 2
+    @State private var tipPercentage = 0
+    @FocusState private var isFocused: Bool
     
-    let tipPercentages = [10, 15, 20, 25, 0]
+    let tipPercentages: [Int] = [10, 15, 18, 20, 0]
     
-    var totalForCheck: Double {
-        let tipSelection = Double(tipPercentage)
-        let tipValue = checkAmount / 100 * tipSelection
-        let grandTotal = checkAmount + tipValue
-        
-        return grandTotal
+    var total: Double {
+        let tip = money / 100 * Double(tipPercentage)
+        return tip + money
     }
     
-    var totalPerPerson: Double {
-        let peopleCount = Double(numberOfPeople) + 2
-        let amountPerPerson = totalForCheck / peopleCount
-        
-        return amountPerPerson
+    var split: Double {
+        return total / Double(people + 2)
+        // people + 2 !!!
     }
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                        .keyboardType(.decimalPad)
-                        .focused($amountIsFocused)
-                                        
-                    Picker("Number of people", selection: $numberOfPeople) {
-                        ForEach(2..<100) {
-                            Text("\($0) people")
+            ZStack {
+                Text("").frame(maxWidth: .infinity, maxHeight: .infinity).background(.green.gradient).ignoresSafeArea()
+                
+                Form {
+                    Section("How much money") {
+                        TextField("Amount", value: $money, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                            .keyboardType(.decimalPad)
+                            .focused($isFocused)
+                        
+                        Picker("Number of people", selection: $people) {
+                            ForEach(2..<100){
+                                Text("\($0) people")
+                            }
                         }
                     }
-//                    .pickerStyle(.navigationLink)
-                }
-                
-                Section("How much tip?") {
-                    Picker("Tip Percentage", selection: $tipPercentage) {
-                        ForEach(0..<101) {
-                            Text($0, format: .percent)
-                        }
+                    
+                    Section("How much tip?") {
+                        Picker("Tip percentage", selection: $tipPercentage) {
+                            ForEach(tipPercentages, id: \.self) {
+                                Text($0, format: .percent)
+                                // 포멧을 바로주니까-> Text($0, format: .percent)
+                            }
+                        }.pickerStyle(.segmented)
                     }
-//                    .pickerStyle(.segmented)
-                    .pickerStyle(.navigationLink)
+                    
+                    Section("Amount for check") {
+                        Text(total, format: .currency(code: Locale.current.currency?.identifier ?? "USD")).tipWarning(with: tipPercentage)
+                    }
+                    
+                    Section("Amount per person") {
+                        Text(split, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    }
                 }
-                
-                Section("Amount for check") {
-                    Text(totalForCheck, format: .currency(code: Locale.current.currency?.identifier ?? "USD")).tipWarning(with: tipPercentage)
-                }
-                
-                Section("Amount per person") {
-                    Text(totalPerPerson, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                }
-            }
-            .navigationTitle("WeSplit")
-            .toolbar {
-                if amountIsFocused {
-                    Button("Done") {
-                        amountIsFocused = false
+                .navigationTitle("WeSplit6")
+                .toolbar {
+                    if isFocused {
+                        Button("Done") {
+                            isFocused = false
+                        }
                     }
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        // .scrollContentBackgorund(.hidden)
     }
 }
 
