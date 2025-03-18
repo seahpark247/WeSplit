@@ -17,7 +17,7 @@ struct tipWarning: ViewModifier {
 }
 
 extension View {
-    func tipWarningStyle(tip: Int) -> some View {
+    func TipWarningStyle(_ tip: Int) -> some View {
         modifier(tipWarning(tip: tip))
     }
 }
@@ -25,15 +25,14 @@ extension View {
 struct ContentView: View {
     @State private var money = 0.0
     @State private var people = 2
-    @State private var tipPercentage = 20
-    @State private var isShowAlert = false
+    @State private var tipPercentage = 18
     @FocusState private var isFocused: Bool
     
-    let tipPercentages = [10, 15, 18, 20, 0]
+    let tipPercentages: [Int] = [10, 15, 18, 20, 0]
     
     var total: Double {
         let tip = money / 100 * Double(tipPercentage)
-        return tip + money
+        return money + tip
     }
     
     var split: Double {
@@ -46,19 +45,19 @@ struct ContentView: View {
                 Text("").frame(maxWidth: .infinity, maxHeight: .infinity).background(.green.gradient).ignoresSafeArea()
                 
                 Form {
-                    Section("How Much Money") {
-                        TextField("Amount", value: $money, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    Section("How much money"){
+                        TextField("Money", value: $money, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                             .keyboardType(.decimalPad)
                             .focused($isFocused)
                         
                         Picker("Number of people", selection: $people) {
-                            ForEach(2..<100) {
+                            ForEach(2..<100){
                                 Text("\($0) people")
                             }
                         }
                     }
                     
-                    Section("How Much Tip?") {
+                    Section("How much money"){
                         Picker("Tip percentages", selection: $tipPercentage) {
                             ForEach(tipPercentages, id: \.self) {
                                 Text($0, format: .percent)
@@ -66,29 +65,29 @@ struct ContentView: View {
                         }.pickerStyle(.segmented)
                     }
                     
-                    Section("Amount For Check") {
+                    Section("How much money"){
                         Text(total, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                            .tipWarningStyle(tip: tipPercentage)
+                            .TipWarningStyle(tipPercentage)
                     }
-                    
-                    Section("Amount Per Person") {
+        
+                    Section("How much money"){
                         Text(split, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                     }
                 }
             }
             .navigationTitle("WeSplit7")
             .toolbar {
-                // if isFocused!!
+                // 네비게이션 타이틀 붙이는 곳에, 툴바도 같이 붙인다. 같은 라인이니까!
                 if isFocused {
                     Button("Done") {
                         isFocused = false
                     }
                 }
             }
-        }.scrollContentBackground(.hidden)
-        
+        }
+        .scrollContentBackground(.hidden)
     }
-
+    
 }
    
 #Preview {
