@@ -12,7 +12,7 @@ struct tipWarning: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .foregroundColor(tip == 0 ? .red : .primary)
+            .foregroundColor(tip == 0 ? .red: tip >= 18 ? .blue : .primary)
     }
 }
 
