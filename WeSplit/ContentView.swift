@@ -74,7 +74,7 @@ struct ContentView: View {
             .navigationTitle("WeSplit7")
             .background(.green.gradient)
             .toolbar {
-                // 네비게이션 타이틀 붙이는 곳에, 툴바도 같이 붙인다. 같은 라인이니까!
+                // 네비게이션 타이틀 붙이는 곳에, 툴바도 같이 붙인다.
                 if isFocused {
                     Button("Done") {
                         isFocused = false
